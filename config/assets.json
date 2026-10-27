@@ -1,0 +1,351 @@
+{
+  "assets": [
+    {
+      "id": "demo.failed_pipeline",
+      "name": "Failed settlement ingestion",
+      "scenario": "failed_pipeline",
+      "scenario_label": "Pipeline failure",
+      "description": "A schema mismatch stops ingestion; settlement and treasury outputs may be exposed.",
+      "owner": "Payments engineering",
+      "table": "demo.payments.failed_pipeline",
+      "job_id": 100,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.failed_pipeline.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.failed_pipeline.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.failed_pipeline.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.stale_success",
+      "name": "Successful job, stale table",
+      "scenario": "stale_success",
+      "scenario_label": "Silent stale data",
+      "description": "The job succeeds, but the table has not received a commit for three hours.",
+      "owner": "Finance platform",
+      "table": "demo.payments.stale_success",
+      "job_id": 101,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.stale_success.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.stale_success.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.stale_success.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.late_events",
+      "name": "Delayed payment events",
+      "scenario": "late_events",
+      "scenario_label": "Event-time lag",
+      "description": "Recent pipeline execution does not compensate for old ingested event timestamps.",
+      "owner": "Streaming operations",
+      "table": "demo.payments.late_events",
+      "job_id": 102,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing.",
+      "freshness_column": "ingested_at"
+    },
+    {
+      "id": "demo.late_events.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.late_events.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.late_events.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.permission_gap",
+      "name": "Freshness access denied",
+      "scenario": "permission_gap",
+      "scenario_label": "Missing permissions",
+      "description": "The app cannot observe the table. It must abstain and block recovery.",
+      "owner": "Data governance",
+      "table": "demo.payments.permission_gap",
+      "job_id": 103,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.permission_gap.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.permission_gap.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.permission_gap.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.quality_failure",
+      "name": "Duplicate transaction IDs",
+      "scenario": "quality_failure",
+      "scenario_label": "Quality failure",
+      "description": "Fresh data fails an illustrative uniqueness rule; freshness alone cannot clear the case.",
+      "owner": "Payments quality",
+      "table": "demo.payments.quality_failure",
+      "job_id": 104,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.quality_failure.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.quality_failure.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.quality_failure.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.expired_check",
+      "name": "Expired freshness observation",
+      "scenario": "expired_check",
+      "scenario_label": "Expired evidence",
+      "description": "A previously healthy check is 35 minutes old, past its 15-minute evidence TTL.",
+      "owner": "Platform operations",
+      "table": "demo.payments.expired_check",
+      "job_id": 105,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.expired_check.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.expired_check.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.expired_check.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.lineage_gap",
+      "name": "Incomplete lineage coverage",
+      "scenario": "lineage_gap",
+      "scenario_label": "Coverage gap",
+      "description": "The table is stale and observed lineage is unavailable; only declared dependencies remain.",
+      "owner": "Analytics engineering",
+      "table": "demo.payments.lineage_gap",
+      "job_id": 106,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.lineage_gap.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.lineage_gap.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.lineage_gap.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    },
+    {
+      "id": "demo.recovered",
+      "name": "Recovered cash-position pipeline",
+      "scenario": "recovered",
+      "scenario_label": "Recovery verified",
+      "description": "A failure is followed by a successful rerun and a fresh table observation.",
+      "owner": "Treasury analytics",
+      "table": "demo.payments.recovered",
+      "job_id": 107,
+      "max_age_minutes": 60,
+      "check_ttl_minutes": 15,
+      "runbook": "Review the evidence with the asset owner. Fix the underlying issue, rerun the pipeline, and verify freshness and quality before closing."
+    },
+    {
+      "id": "demo.recovered.curated",
+      "name": "Curated payment metrics",
+      "type": "TABLE",
+      "owner": "Analytics engineering"
+    },
+    {
+      "id": "demo.recovered.report",
+      "name": "Treasury dashboard",
+      "type": "REPORT",
+      "owner": "Treasury operations"
+    },
+    {
+      "id": "demo.recovered.ops_report",
+      "name": "Operations report",
+      "type": "REPORT",
+      "owner": "Payments operations"
+    }
+  ],
+  "dependencies": [
+    {
+      "source": "demo.failed_pipeline",
+      "target": "demo.failed_pipeline.curated"
+    },
+    {
+      "source": "demo.failed_pipeline.curated",
+      "target": "demo.failed_pipeline.report"
+    },
+    {
+      "source": "demo.failed_pipeline.curated",
+      "target": "demo.failed_pipeline.ops_report"
+    },
+    {
+      "source": "demo.stale_success",
+      "target": "demo.stale_success.curated"
+    },
+    {
+      "source": "demo.stale_success.curated",
+      "target": "demo.stale_success.report"
+    },
+    {
+      "source": "demo.stale_success.curated",
+      "target": "demo.stale_success.ops_report"
+    },
+    {
+      "source": "demo.late_events",
+      "target": "demo.late_events.curated"
+    },
+    {
+      "source": "demo.late_events.curated",
+      "target": "demo.late_events.report"
+    },
+    {
+      "source": "demo.late_events.curated",
+      "target": "demo.late_events.ops_report"
+    },
+    {
+      "source": "demo.permission_gap",
+      "target": "demo.permission_gap.curated"
+    },
+    {
+      "source": "demo.permission_gap.curated",
+      "target": "demo.permission_gap.report"
+    },
+    {
+      "source": "demo.permission_gap.curated",
+      "target": "demo.permission_gap.ops_report"
+    },
+    {
+      "source": "demo.quality_failure",
+      "target": "demo.quality_failure.curated"
+    },
+    {
+      "source": "demo.quality_failure.curated",
+      "target": "demo.quality_failure.report"
+    },
+    {
+      "source": "demo.quality_failure.curated",
+      "target": "demo.quality_failure.ops_report"
+    },
+    {
+      "source": "demo.expired_check",
+      "target": "demo.expired_check.curated"
+    },
+    {
+      "source": "demo.expired_check.curated",
+      "target": "demo.expired_check.report"
+    },
+    {
+      "source": "demo.expired_check.curated",
+      "target": "demo.expired_check.ops_report"
+    },
+    {
+      "source": "demo.lineage_gap",
+      "target": "demo.lineage_gap.curated"
+    },
+    {
+      "source": "demo.lineage_gap.curated",
+      "target": "demo.lineage_gap.report"
+    },
+    {
+      "source": "demo.lineage_gap.curated",
+      "target": "demo.lineage_gap.ops_report"
+    },
+    {
+      "source": "demo.recovered",
+      "target": "demo.recovered.curated"
+    },
+    {
+      "source": "demo.recovered.curated",
+      "target": "demo.recovered.report"
+    },
+    {
+      "source": "demo.recovered.curated",
+      "target": "demo.recovered.ops_report"
+    }
+  ]
+}

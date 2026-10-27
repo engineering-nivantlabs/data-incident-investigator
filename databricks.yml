@@ -1,0 +1,21 @@
+bundle:
+  name: data-incident-investigator
+variables:
+  warehouse_id:
+    description: Existing SQL warehouse for collection and pilot state
+  app_name:
+    default: incident-investigator
+resources:
+  apps:
+    investigator:
+      name: ${var.app_name}
+      description: Internal data incident investigation pilot
+      source_code_path: .
+      resources:
+        - name: sql-warehouse
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+targets:
+  pilot:
+    default: true

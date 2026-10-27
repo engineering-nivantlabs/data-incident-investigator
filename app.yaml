@@ -1,0 +1,10 @@
+command: ['python', '-m', 'investigator.app_runtime']
+env:
+  - name: DII_MODE
+    value: databricks
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: DII_CONFIG
+    value: config/pilot.json
+  - name: DII_STATE_TABLE
+    value: main.incident_investigator.app_state

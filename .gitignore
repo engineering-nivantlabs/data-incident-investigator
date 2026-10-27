@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.sqlite3
+.env
+.databricks/
+pilot-source/
+*.sqlite3-shm
+*.sqlite3-wal
+
+*.zip
+.DS_Store

@@ -1,0 +1,7 @@
+{
+  "assets": [
+    {"id": "settlements", "name": "Settlement data", "table": "main.payments.settlements", "job_id": 101, "owner": "Payments engineering", "max_age_minutes": 90, "check_ttl_minutes": 15, "runbook": "Inspect the failed task and source. Verify a new Delta commit and business quality checks before closing."},
+    {"id": "cash_position", "name": "Cash position", "table": "main.payments.cash_position", "freshness_column": "ingested_at", "owner": "Treasury analytics", "max_age_minutes": 90, "check_ttl_minutes": 15}
+  ],
+  "dependencies": [{"source": "settlements", "target": "cash_position"}]
+}
