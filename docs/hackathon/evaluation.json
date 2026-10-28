@@ -1,0 +1,133 @@
+{
+  "generated_at": "2026-10-28T18:06:57.713070+00:00",
+  "scope": "Local Python engine with synthetic source data and local adapters. No external network or Databricks execution.",
+  "scenarios_evaluated": 9,
+  "local_execution_seconds": 0.12,
+  "triage_improvement_measured": false,
+  "production_safety_claim": false,
+  "results": [
+    {
+      "scenario": "mfts_late",
+      "observed_initial_status": "BREACHED",
+      "expected_initial_status": "BREACHED",
+      "recovery_actions": [
+        "retry_mfts"
+      ],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "44a72422ba063e977e09c9a2d0030501a00462e192de183dd8f7dbe1fe3c3c97",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "success",
+      "observed_initial_status": "ON_TRACK",
+      "expected_initial_status": "ON_TRACK",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "2e1a464e4d02ca6fc3b8f51d162f48b93cd66cf19388211eb39c4e641298f0b5",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "timeout_retry",
+      "observed_initial_status": "AT_RISK",
+      "expected_initial_status": "AT_RISK",
+      "recovery_actions": [
+        "reconcile_kafka"
+      ],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "6a63eba09cb7e63d1f7a275766fc52b68c1aebcb6aa38024843bcd7cf721cbfc",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "exhausted_retries",
+      "observed_initial_status": "BLOCKED",
+      "expected_initial_status": "BLOCKED",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 0,
+      "kafka_writes_after": 0,
+      "required_channels_complete": false,
+      "consumers_verified": false,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "6881672b30aef5906e27b0659240debda5a9246230c5dc74936e4e0d996f7829",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "stalled",
+      "observed_initial_status": "AT_RISK",
+      "expected_initial_status": "AT_RISK",
+      "recovery_actions": [
+        "resume_processing"
+      ],
+      "kafka_writes_before_recovery": 0,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "bd70a2eca42b94f135e370016ca561639e78dd7fbccdbc9f2d4ab655b5931d28",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "optional_mfts",
+      "observed_initial_status": "ON_TRACK",
+      "expected_initial_status": "ON_TRACK",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "888f557082dbac6523ff82f1026aef7c5bd2d83d5f2ac137c796a7c2c4398246",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "quarantine",
+      "observed_initial_status": "BLOCKED",
+      "expected_initial_status": "BLOCKED",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": false,
+      "quarantined_records": 1,
+      "evidence_fingerprint": "a8e6f26b4e1c103db0cb988c9ff092efa3315b24bf079ef5c7222778abf2dc87",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "duplicate",
+      "observed_initial_status": "ON_TRACK",
+      "expected_initial_status": "ON_TRACK",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 5,
+      "kafka_writes_after": 5,
+      "required_channels_complete": true,
+      "consumers_verified": true,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "13a40d88b13978beb20d8779290f20d75d9edb352ec93043c192d601bdfeb651",
+      "assertions_passed": true
+    },
+    {
+      "scenario": "kafka_deferred",
+      "observed_initial_status": "BLOCKED",
+      "expected_initial_status": "BLOCKED",
+      "recovery_actions": [],
+      "kafka_writes_before_recovery": 0,
+      "kafka_writes_after": 0,
+      "required_channels_complete": false,
+      "consumers_verified": false,
+      "quarantined_records": 0,
+      "evidence_fingerprint": "4d821607c09fab61820db8719ebc525060f256ca811775e75b3dac24aced5959",
+      "assertions_passed": true
+    }
+  ]
+}

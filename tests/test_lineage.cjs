@@ -15,3 +15,5 @@ g=Lineage.model(asset,{...base,recovery_verified:true,downstream_verified:{b:{si
 assert.ok(g.nodes.every(n=>n.status==='healthy'));
 assert.equal(g.nodes[2].caption,'Refresh passed (simulated)');
 g=Lineage.model(asset,{...base,recovery_verified:false,downstream_verified:{c:{simulated:true}}},assets);assert.equal(g.nodes[2].status,'affected');
+g=Lineage.model(asset,{...base,node_states:{a:{status:'healthy',caption:'Validated file'},b:{status:'failed',caption:'Delivery failed'},c:{status:'affected',caption:'Consumer at risk'}}},assets);
+assert.equal(g.nodes[0].status,'healthy');assert.equal(g.nodes[1].status,'failed');assert.equal(g.nodes[2].caption,'Consumer at risk');

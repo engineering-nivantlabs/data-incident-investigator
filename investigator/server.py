@@ -5,7 +5,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from threading import Lock
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
 from .store import Store, DeltaStore
 from .engine import investigate
 from .connectors import demo_events, collect_databricks, collect_catalog
@@ -57,11 +57,29 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
     app = Flask(__name__, static_folder=None)
     assets = {a['id']: a for a in config['assets']}
     lock = Lock()
+    delivery = None
+    fraud = None
+    if mode == 'demo' and hasattr(store, 'connect'):
+        from delivery.lab import DeliveryLab
+        delivery = DeliveryLab(store)
+        from .fraud import FraudLab
+        fraud = FraudLab(store)
 
     def dependencies():
         return [dict(e, origin='declared') for e in config.get('dependencies', [])] + store.dependencies()
 
+    def get_asset(identity):
+        if fraud and identity.startswith('fraud:'):
+            return fraud.assets(fraud.get(identity.split(':',1)[1]))[0]
+        if delivery and identity.startswith('delivery:'):
+            return delivery.graph_assets(delivery.get(identity.split(':',1)[1]))[0]
+        return assets[identity]
+
     def analyze(asset):
+        if fraud and asset.get('kind') == 'fraud':
+            return fraud.projection(fraud.get(asset['id'].split(':',1)[1]))
+        if delivery and asset.get('kind') == 'delivery':
+            return delivery.projection(delivery.get(asset['id'].split(':',1)[1]))
         return investigate(asset, store.events(), dependencies())
 
     if mode == 'demo' and not store.incidents():
@@ -84,15 +102,71 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
     def index():
         return send_from_directory(ROOT/'static', 'index.html')
 
+    @app.get('/fraud')
+    def fraud_page():
+        return send_from_directory(ROOT/'static', 'fraud.html')
+
+    @app.get('/api/fraud/state')
+    def fraud_state():
+        from .fraud import SCENARIOS
+        return jsonify(available=fraud is not None,scenarios=SCENARIOS if fraud else {},runs=fraud.runs() if fraud else [])
+
+    @app.get('/api/fraud/evidence/<identity>')
+    def fraud_evidence(identity):
+        if not fraud:return jsonify(error='Fraud Guard is local synthetic mode only'),403
+        try:
+            response=jsonify(fraud.get(identity))
+            response.headers['Content-Disposition']='attachment; filename=fraud-evidence.json'
+            return response
+        except ValueError as exc:return jsonify(error=str(exc)),404
+
+    @app.get('/architecture')
+    def architecture_page():
+        return send_from_directory(ROOT/'static', 'architecture.html')
+
+    @app.get('/demo')
+    def guided_page():
+        return send_from_directory(ROOT/'static', 'guided.html')
+
+    @app.get('/builder')
+    def builder_page():
+        return send_from_directory(ROOT/'static', 'builder.html')
+
+    @app.get('/delivery')
+    def delivery_page():
+        return send_from_directory(ROOT/'static', 'delivery.html')
+
+    @app.get('/api/delivery/state')
+    def delivery_state():
+        from delivery.scenarios import SCENARIOS
+        return jsonify(available=delivery is not None, scenarios=SCENARIOS if delivery else {}, runs=delivery.runs() if delivery else [])
+
+    @app.get('/api/delivery/evaluation')
+    def delivery_evaluation():
+        if not delivery:
+            return jsonify(error='Evaluation scorecard is local demo only'),403
+        return send_from_directory(ROOT/'docs/hackathon', 'evaluation.json', as_attachment=True)
+
+    @app.get('/api/delivery/evidence/<identity>')
+    def delivery_evidence(identity):
+        if not delivery:
+            return jsonify(error='Delivery Lab is local synthetic mode only'), 403
+        try:
+            response=jsonify(delivery.get(identity))
+            response.headers['Content-Disposition']='attachment; filename=delivery-evidence.json'
+            return response
+        except ValueError as exc:
+            return jsonify(error=str(exc)),404
+
     @app.get('/<name>')
     def static_file(name):
-        if name not in {'app.js', 'style.css', 'lineage.js', 'lineage-view.js'}:
+        if name not in {'app.js', 'style.css', 'lineage.js', 'lineage-view.js', 'delivery.js', 'builder.js', 'guided.js', 'fraud.js'}:
             return jsonify(error='Not found'), 404
         return send_from_directory(ROOT/'static', name)
 
     @app.get('/api/state')
     def state():
-        return jsonify(mode=mode, assets=list(assets.values()), incidents=store.incidents(), event_count=len(store.events()))
+        return jsonify(mode=mode, assets=list(assets.values())+([a for run in fraud.runs() for a in fraud.assets(run)] if fraud else [])+([a for run in delivery.runs() for a in delivery.graph_assets(run)] if delivery else []), incidents=store.incidents(), event_count=len(store.events()))
 
     @app.post('/api/<operation>')
     def mutate(operation):
@@ -106,11 +180,44 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
                 raise ValueError('Expected an object')
             # One Gunicorn worker and this lock serialize shared-state mutations for this pilot.
             with lock:
+                if operation == 'fraud':
+                    if not fraud:return jsonify(error='Fraud Guard requires local synthetic mode'),403
+                    if data.get('command')=='create':return jsonify(fraud.create(data.get('scenario','review_timeout'),data.get('guided',False)))
+                    return jsonify(fraud.command(data['id'],data['command'],data))
+                if operation == 'guided-demo':
+                    if not delivery:return jsonify(error='Guided demo requires local synthetic mode'),403
+                    if data.get('command')=='start':
+                        from .workflow_builder import build
+                        plan=build({'prompt':'Hourly synthetic delivery workflow with consumer verification','kind':'workflow','name':'manager_demo'})
+                        run=delivery.create('mfts_late',workflow_plan=plan)
+                        return jsonify(delivery.command(run['id'],'guided_start'))
+                    if data.get('command')!='next':raise ValueError('Unknown guided command')
+                    return jsonify(delivery.command(data['id'],'guided_next',data))
+                if operation == 'workflow-run':
+                    if not delivery:
+                        return jsonify(error='Local workflow execution is disabled outside synthetic mode'),403
+                    from .workflow_builder import build
+                    plan=build(data)
+                    if plan['status']=='BLOCKED':raise ValueError('Blocked workflow cannot run')
+                    run=delivery.create(data.get('scenario','mfts_late'),workflow_plan=plan)
+                    return jsonify(delivery.command(run['id'],'run_workflow'))
+                if operation in {'workflow-plan', 'workflow-export'}:
+                    from .workflow_builder import build, archive
+                    plan = build(data)
+                    if operation == 'workflow-export':
+                        return send_file(archive(plan), mimetype='application/zip', as_attachment=True, download_name='synthetic-databricks-bundle.zip')
+                    return jsonify(plan)
+                if operation == 'delivery':
+                    if not delivery:
+                        return jsonify(error='Delivery Lab is disabled outside local synthetic mode'),403
+                    if data.get('command')=='create':
+                        return jsonify(delivery.create(data['scenario']))
+                    return jsonify(delivery.command(data['id'],data['command'],data))
                 if operation == 'demo-refresh-downstream':
                     if mode != 'demo':
                         return jsonify(error='Simulation is available only in demo mode'), 403
                     from .demo import downstream_events
-                    asset = assets[data['asset_id']]
+                    asset = get_asset(data['asset_id'])
                     if not asset.get('scenario'):
                         raise ValueError('Select a demo scenario')
                     case = next(i for i in store.incidents() if i['asset_id'] == asset['id'] and i['status'] != 'resolved')
@@ -127,7 +234,7 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
                     if mode != 'demo':
                         return jsonify(error='Simulation is available only in demo mode'), 403
                     from .demo import recovery_events
-                    asset = assets[data['asset_id']]
+                    asset = get_asset(data['asset_id'])
                     if not asset.get('scenario'):
                         raise ValueError('Select a demo scenario')
                     store.ingest(recovery_events(asset))
@@ -152,14 +259,14 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
                     store.set_dependencies(edges)
                     if mode == 'demo':
                         for case in store.incidents():
-                            if case['status'] != 'resolved':
+                            if case['status'] != 'resolved' and not case['asset_id'].startswith(('delivery:','fraud:')):
                                 case.pop('before_recovery', None)
                                 case.pop('source_recovered', None)
-                                case['investigation'] = analyze(assets[case['asset_id']])
+                                case['investigation'] = analyze(get_asset(case['asset_id']))
                                 store.save(case)
                     return jsonify(collected=len(events), observed_edges=len(edges))
                 if operation == 'investigate':
-                    asset = assets[data['asset_id']]
+                    asset = get_asset(data['asset_id'])
                     case = next((i for i in store.incidents() if i['asset_id'] == asset['id'] and i['status'] != 'resolved'), None)
                     case = case or {'id': str(uuid.uuid4()), 'asset_id': asset['id'], 'title': asset['name'], 'status': 'open', 'assignee': '', 'history': []}
                     case['investigation'] = analyze(asset)
@@ -172,7 +279,7 @@ def create_app(store=None, config=None, mode=None, client=None, sql=None):
                     if case['status'] == 'resolved':
                         raise ValueError('Resolved incidents are immutable; create a new investigation')
                     if status == 'resolved':
-                        result = analyze(assets[case['asset_id']])
+                        result = analyze(get_asset(case['asset_id']))
                         if not result['recovery_verified']:
                             raise ValueError('Recovery is not verified. Sync current telemetry and investigate again.')
                         case['investigation'] = result

@@ -9,3 +9,7 @@ pilot-source/
 
 *.zip
 .DS_Store
+
+.codex-export/
+
+output/

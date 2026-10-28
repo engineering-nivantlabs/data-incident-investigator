@@ -1,0 +1,81 @@
+{
+  "generated_at": "2026-10-28T18:42:46.105555+00:00",
+  "scope": "Synthetic USD transactions and local Python gateway/issuer adapters. No external payment or Databricks calls.",
+  "fraud_accuracy_measured": false,
+  "production_safety_claim": false,
+  "scenarios_evaluated": 8,
+  "results": [
+    {
+      "scenario": "review_timeout",
+      "initial_fraud_decision": "REVIEW",
+      "final_gateway_outcome": "APPROVED",
+      "ambiguous_ack_reconciled": true,
+      "issuer_calls": 1,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "normal",
+      "initial_fraud_decision": "ALLOW",
+      "final_gateway_outcome": "APPROVED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 1,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "issuer_decline",
+      "initial_fraud_decision": "ALLOW",
+      "final_gateway_outcome": "DECLINED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 1,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "velocity",
+      "initial_fraud_decision": "BLOCK",
+      "final_gateway_outcome": "NOT_CALLED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 0,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "challenge",
+      "initial_fraud_decision": "CHALLENGE",
+      "final_gateway_outcome": "APPROVED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 1,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "challenge_fail",
+      "initial_fraud_decision": "CHALLENGE",
+      "final_gateway_outcome": "NOT_CALLED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 0,
+      "safely_handled": true,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "risk_unavailable",
+      "initial_fraud_decision": "UNAVAILABLE",
+      "final_gateway_outcome": "NOT_CALLED",
+      "ambiguous_ack_reconciled": false,
+      "issuer_calls": 0,
+      "safely_handled": false,
+      "assertions_passed": true
+    },
+    {
+      "scenario": "authorization_timeout",
+      "initial_fraud_decision": "ALLOW",
+      "final_gateway_outcome": "APPROVED",
+      "ambiguous_ack_reconciled": true,
+      "issuer_calls": 1,
+      "safely_handled": true,
+      "assertions_passed": true
+    }
+  ]
+}

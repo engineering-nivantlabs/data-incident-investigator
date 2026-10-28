@@ -1,0 +1,7 @@
+[
+ {"source_record_id":"SYN-1001","route_key":"TREASURY","amount":"125.50","currency":"USD"},
+ {"source_record_id":"SYN-1002","route_key":"TREASURY","amount":"248.10","currency":"USD"},
+ {"source_record_id":"SYN-1003","route_key":"OPERATIONS","amount":"82.25","currency":"GBP"},
+ {"source_record_id":"SYN-1004","route_key":"OPERATIONS","amount":"671.00","currency":"EUR"},
+ {"source_record_id":"SYN-1005","route_key":"TREASURY","amount":"4300.00","currency":"INR"}
+]

@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>DeliveryGuard · Delivery Lab</title><link rel="stylesheet" href="/style.css"></head>
+<body><p class="app-links"><a href="/fraud">Fraud Guard · synthetic payments</a></p><p class="app-links"><a href="/demo">▶ Guided manager demo</a></p><p class="app-links"><a href="/builder">Databricks Workflow Builder</a></p><aside><div class="brand">◈ SIGNAL</div><p>DeliveryGuard + Investigations</p><nav><a href="/architecture">▧ Architecture review</a><a href="/delivery">◇ Delivery Lab</a><a href="/">◉ Investigations</a></nav><div class="aside-note">Executable pipeline.<br>Evidence before action.</div></aside>
+<main class="delivery-main"><header><div><small>DELIVERYGUARD / ARCHITECTURE DEMONSTRATOR</small><h1>From delivery risk to proven recovery</h1><p>A real local workflow, driven by synthetic files and fault-injected adapters.</p></div><a class="secondary export-link" href="/architecture">Architecture review ↗</a></header>
+<div class="lab-boundary"><strong>LOCAL SYNTHETIC ENVIRONMENT</strong><span>Python pipeline + transactional manifests + local broker and transfer receiver. No Databricks, Kafka or MFTS connection. Simulated approval identities.</span></div>
+<div id="lab-notice" role="status"></div>
+<section class="lab-launch"><label for="scenario">Choose a business story</label><select id="scenario"></select><button id="new-run">Start a new run</button></section>
+<div class="lab-layout"><section><h2>Delivery requests</h2><div id="runs"></div></section><section id="run-detail"><div class="empty">Choose a scenario and start a run. Each action executes backend processing and persists its evidence.</div></section></div>
+<footer>At-least-once delivery model · Controlled per-request replay · Targets are hypotheses, not production results</footer></main>
+<script src="/lineage.js"></script><script src="/lineage-view.js"></script><script src="/delivery.js"></script></body></html>

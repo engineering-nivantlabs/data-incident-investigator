@@ -8,7 +8,7 @@ target = root/'pilot-source'
 target.mkdir(exist_ok=False)
 for name in ['app.yaml', 'requirements.txt']:
     shutil.copy2(root/name, target/name)
-for name in ['investigator', 'static']:
+for name in ['investigator', 'static', 'delivery']:
     shutil.copytree(root/name, target/name, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
 (target/'config').mkdir()
 shutil.copy2(root/'config/pilot.json', target/'config/pilot.json')
